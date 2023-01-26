@@ -4,30 +4,32 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.mineacademy.chatcontrol.api.ChatChannelBungeeEvent;
+import org.mineacademy.chatcontrol.api.ChatChannelEvent;
 import org.mineacademy.chatcontrol.api.PrePrivateMessageEvent;
 
+import me.fopzl.doctor.Doctor;
+import me.fopzl.doctor.Doctor.Rank;
+import me.fopzl.doctor.monitors.ChatMonitor;
+
 public class ChatListener implements Listener {
-	
-	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onChat(ChatChannelBungeeEvent e) {
-		String senderName = e.getSenderName();
-		String msg = e.getMessage();
-		
-		// TODO
+	public void onChat(ChatChannelEvent e) {
+		if(!(e.getSender() instanceof Player)) return;
+		Player sender = (Player)e.getSender();
+
+		Rank rank = Doctor.getPlayerRank(sender);
+		String channel = e.getChannel().getName();
+
+		ChatMonitor.inc(rank, channel);
 	}
-	
-	// whisper cmds: /w /whisper /msg /message /tell /r /reply /pm
-	// handles /tc, /nc, etc.?
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onMessage(PrePrivateMessageEvent e) {
 		if(!(e.getSender() instanceof Player)) return;
-		
+
 		Player sender = (Player)e.getSender();
-		Player receiver = (Player)e.getReceiver();
-		String msg = e.getMessage();
-		
-		// TODO
+		Rank rank = Doctor.getPlayerRank(sender);
+
+		ChatMonitor.inc(rank, "message");
 	}
 }

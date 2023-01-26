@@ -7,12 +7,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
 
+import me.fopzl.doctor.monitors.EntityMonitor;
+
 public class EntityListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntitySpawn(EntitySpawnEvent e) {
 		World w = e.getEntity().getWorld();
 		EntityType type = e.getEntityType();
-		
-		// TODO
+
+		EntityMonitor.inc(w, type);
 	}
 }

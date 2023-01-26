@@ -6,11 +6,14 @@ import org.bukkit.event.Listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 
+import me.fopzl.doctor.monitors.VoteMonitor;
+
 public class VoteListener implements Listener {
+	// TODO: eventually listen for custom fopzlvote event, to avoid duplicate calls
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onVote(VotifierEvent e) {
 		String site = e.getVote().getServiceName();
-		
-		// TODO
+
+		VoteMonitor.inc(site);
 	}
 }

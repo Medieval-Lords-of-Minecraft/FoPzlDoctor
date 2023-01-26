@@ -1,6 +1,7 @@
 name: FoPzlDoctor
 main: me.fopzl.doctor.Doctor
 author: [FoPzl]
-depend: []
+depend: [NeoCore]
+softdepend: [SkillAPI]
 version: 0.1
 api-version: 1.19

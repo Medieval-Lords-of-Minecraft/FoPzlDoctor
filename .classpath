@@ -7,12 +7,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/spigot-api-1.19.3-R0.1-20230112.085520-27-shaded.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/UltraEconomy.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/nuvotifier.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/SkillAPI.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoQuests.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoBossInstances.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/spark-1.10.26-bukkit.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/ChatControl-Red-10.16.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoCore.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/EssentialsX-2.19.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/Towny-0.98.6.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

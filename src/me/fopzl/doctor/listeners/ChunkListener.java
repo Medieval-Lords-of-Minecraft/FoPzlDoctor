@@ -6,13 +6,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 
+import me.fopzl.doctor.monitors.ChunkMonitor;
+
 public class ChunkListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChunkLoad(ChunkLoadEvent e) {
 		World w = e.getWorld();
 		int chunkX = e.getChunk().getX();
 		int chunkZ = e.getChunk().getZ();
-		
-		// TODO
+
+		ChunkMonitor.tryInc(w, chunkX, chunkZ);
 	}
 }
