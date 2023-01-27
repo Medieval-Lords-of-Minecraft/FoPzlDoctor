@@ -4,10 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -17,11 +18,12 @@ import org.bukkit.entity.EntityType;
 
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Pair;
+import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class EntityMonitor extends Monitor {
 	// String in key is world name
-	private static Set<Pair<String, EntityType>> newEntities = new HashSet<Pair<String, EntityType>>();
+	private static Map<Pair<String, EntityType>, Integer> newEntityCounts = new HashMap<Pair<String, EntityType>, Integer>();
 	
 	public EntityMonitor(ScheduleInterval i) {
 		super(i);
@@ -29,10 +31,27 @@ public class EntityMonitor extends Monitor {
 	
 	@Override
 	protected void update() {
+		List<String> sqls = new ArrayList<String>();
+		String server = NeoCore.getInstanceKey();
 		for (World w : Bukkit.getWorlds()) {
-			int numEntities = w.getEntities().size();
+			String world = w.getName();
+			int totalCount = w.getEntities().size();
+
+			sqls.add("insert into fopzldoctor_entityMonitor_total (server, world, totalCount) values ('" + server + "', '" + world + "', " + totalCount + ");");
 		}
-		// TODO: send counts to sql
+
+		for (Entry<Pair<String, EntityType>, Integer> entry : newEntityCounts.entrySet()) {
+			String world = entry.getKey().getValue0();
+			String entityType = entry.getKey().getValue1().toString();
+			int newCount = entry.getValue();
+
+			sqls.add(
+					"insert into fopzldoctor_entityMonitor_new (server, world, entityType, newCount) values ('" + server + "', '" + world + "', '" + entityType
+							+ "', " + newCount + ");"
+			);
+		}
+
+		permSaveData(sqls);
 		reset();
 	}
 
@@ -42,8 +61,8 @@ public class EntityMonitor extends Monitor {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
 
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			new ObjectOutputStream(bytes).writeObject(newEntities);
-			blobs.put("newEntities", new SerialBlob(bytes.toByteArray()));
+			new ObjectOutputStream(bytes).writeObject(newEntityCounts);
+			blobs.put("newEntityCounts", new SerialBlob(bytes.toByteArray()));
 
 			bytes.close();
 
@@ -59,7 +78,7 @@ public class EntityMonitor extends Monitor {
 	protected void loadData() {
 		try {
 			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
-			newEntities = (Set<Pair<String, EntityType>>) (new ObjectInputStream(blobs.get("newEntities").getBinaryStream()).readObject());
+			newEntityCounts = (Map<Pair<String, EntityType>, Integer>) (new ObjectInputStream(blobs.get("newEntityCounts").getBinaryStream()).readObject());
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");
 			e.printStackTrace();
@@ -67,11 +86,11 @@ public class EntityMonitor extends Monitor {
 	}
 	
 	private static void reset() {
-		newEntities.clear();
+		newEntityCounts.clear();
 	}
 	
 	public static void inc(String worldName, EntityType type) {
 		Pair<String, EntityType> pair = Pair.with(worldName, type);
-		newEntities.add(pair);
+		newEntityCounts.put(pair, newEntityCounts.getOrDefault(pair, 0) + 1);
 	}
 }

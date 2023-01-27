@@ -1,9 +1,13 @@
 package me.fopzl.doctor.monitors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 
+import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class TownyStatMonitor extends Monitor {
@@ -16,6 +20,8 @@ public class TownyStatMonitor extends Monitor {
 
 	@Override
 	protected void update() {
+		List<String> sqls = new ArrayList<String>();
+
 		int numTowns = towny.getTowns().size();
 		int numNations = towny.getNations().size();
 
@@ -27,7 +33,13 @@ public class TownyStatMonitor extends Monitor {
 		for (Nation n : towny.getNations()) {
 			nationPlots += n.getNumTownblocks();
 		}
-		// TODO: send counts to sql
+
+		String server = NeoCore.getInstanceKey();
+		sqls.add(
+				"insert into fopzldoctor_townyStatMonitor (server, numTowns, numNations, townPlots, nationPlots) values ('" + server + "', " + numTowns + ", "
+						+ numNations + ", " + townPlots + ", " + nationPlots + ");"
+		);
+		permSaveData(sqls);
 	}
 	
 	@Override

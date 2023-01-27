@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import com.sucy.skill.SkillAPI;
 import com.sucy.skill.api.event.PlayerLevelUpEvent;
 
-import me.fopzl.doctor.Doctor;
+import me.fopzl.doctor.Doctor.QuestLevelGroup;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.monitors.QuestMonitor;
 import me.neoblade298.neobossinstances.BossStartEvent;
@@ -19,7 +19,7 @@ public class QuestListener implements Listener {
 	public void onLevelUp(PlayerLevelUpEvent e) {
 		Player p = e.getPlayerData().getPlayer();
 		
-		Rank rank = Doctor.getPlayerRank(p);
+		Rank rank = Rank.getPlayerRank(p);
 		
 		QuestMonitor.incLevelup(rank);
 	}
@@ -28,7 +28,7 @@ public class QuestListener implements Listener {
 	public void onQuestComplete(QuestCompleteEvent e) {
 		Player p = e.getPlayer();
 		
-		Rank rank = Doctor.getPlayerRank(p);
+		Rank rank = Rank.getPlayerRank(p);
 		
 		QuestMonitor.incQuestComplete(rank);
 	}
@@ -44,6 +44,6 @@ public class QuestListener implements Listener {
 		}
 		String bossName = e.getBossName();
 		
-		QuestMonitor.incBossStart(bossName, numFighters, maxFighterLvl);
+		QuestMonitor.incBossStart(bossName, numFighters, QuestLevelGroup.fromLevel(maxFighterLvl));
 	}
 }

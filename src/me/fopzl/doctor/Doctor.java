@@ -172,17 +172,48 @@ public class Doctor extends JavaPlugin {
 	}
 	
 	public enum Rank {
-		PAID, STAFF, NONE
+		PAID, STAFF, NONE;
+		
+		public static Rank getPlayerRank(Player p) {
+			if (perms.playerHas(p, "Vote.Staff")) {
+				return Rank.STAFF;
+			} else if (perms.playerHas(p, "Vote.Diamond") || perms.playerHas(p, "Vote.Emerald") || perms.playerHas(p, "Vote.Sapphire")
+					|| perms.playerHas(p, "Vote.Ruby")) {
+				return Rank.PAID;
+			} else {
+				return Rank.NONE;
+			}
+		}
 	}
-	
-	public static Rank getPlayerRank(Player p) {
-		if (perms.playerHas(p, "Vote.Staff")) {
-			return Rank.STAFF;
-		} else if (perms.playerHas(p, "Vote.Diamond") || perms.playerHas(p, "Vote.Emerald") || perms.playerHas(p, "Vote.Sapphire")
-				|| perms.playerHas(p, "Vote.Ruby")) {
-			return Rank.PAID;
-		} else {
-			return Rank.NONE;
+
+	public enum QuestLevelGroup {
+		T2LOW("1-9"), T2MID("10-19"), T2HIGH("20-29"), T3LOW("30-39"), T3MID("40-49"), T3HIGH("50-59"), MAX("60"); // will need to update when T4 comes out in 10 years
+
+		private final String text;
+
+		QuestLevelGroup(final String text) {
+			this.text = text;
+		}
+
+		public static QuestLevelGroup fromLevel(int lvl) {
+			if (lvl < 10)
+				return T2LOW;
+			if (lvl < 20)
+				return T2MID;
+			if (lvl < 30)
+				return T2HIGH;
+			if (lvl < 40)
+				return T3LOW;
+			if (lvl < 50)
+				return T3MID;
+			if (lvl < 60)
+				return T3HIGH;
+			return MAX;
+		}
+
+		@Override
+		public String toString() {
+			return text;
 		}
 	}
 }

@@ -8,7 +8,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.CreativeCategory;
 
-import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.monitors.BlockMonitor;
 
@@ -16,22 +15,22 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent e) {
 		Player p = e.getPlayer();
-
+		
 		String world = p.getWorld().getName();
-		Rank rank = Doctor.getPlayerRank(p);
+		Rank rank = Rank.getPlayerRank(p);
 		CreativeCategory category = e.getBlock().getType().getCreativeCategory();
-
+		
 		BlockMonitor.incBreak(world, rank, category);
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent e) {
 		Player p = e.getPlayer();
-
+		
 		String world = p.getWorld().getName();
-		Rank rank = Doctor.getPlayerRank(p);
+		Rank rank = Rank.getPlayerRank(p);
 		CreativeCategory category = e.getBlock().getType().getCreativeCategory();
-
+		
 		BlockMonitor.incPlace(world, rank, category);
 	}
 }

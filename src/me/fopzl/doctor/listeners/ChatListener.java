@@ -7,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.mineacademy.chatcontrol.api.ChatChannelEvent;
 import org.mineacademy.chatcontrol.api.PrePrivateMessageEvent;
 
-import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.monitors.ChatMonitor;
 
@@ -17,21 +16,21 @@ public class ChatListener implements Listener {
 		if (!(e.getSender() instanceof Player))
 			return;
 		Player sender = (Player) e.getSender();
-		
-		Rank rank = Doctor.getPlayerRank(sender);
+
+		Rank rank = Rank.getPlayerRank(sender);
 		String channel = e.getChannel().getName();
-		
+
 		ChatMonitor.inc(rank, channel);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onMessage(PrePrivateMessageEvent e) {
 		if (!(e.getSender() instanceof Player))
 			return;
-		
+
 		Player sender = (Player) e.getSender();
-		Rank rank = Doctor.getPlayerRank(sender);
-		
+		Rank rank = Rank.getPlayerRank(sender);
+
 		ChatMonitor.inc(rank, "message");
 	}
 }

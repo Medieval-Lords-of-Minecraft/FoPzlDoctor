@@ -7,12 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -73,18 +73,16 @@ public class IOManager {
 		return blobs;
 	}
 	
-	public static void writeToSQL(String sqlStatement) {
-		try {
-			Connection conn = src.getConnection();
-			Statement stmt = conn.createStatement();
-			
-			stmt.execute(sqlStatement);
-			
-			stmt.close();
-			conn.close();
-		} catch (SQLException e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception writing SQL: " + sqlStatement);
-			e.printStackTrace();
+	public static void writeToSQL(List<String> sqlStatements) throws SQLException {
+		Connection conn = src.getConnection();
+		Statement stmt = conn.createStatement();
+
+		for (String s : sqlStatements) {
+			stmt.addBatch(s);
 		}
+		stmt.executeBatch();
+		
+		stmt.close();
+		conn.close();
 	}
 }

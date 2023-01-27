@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -13,6 +16,7 @@ import org.bukkit.Bukkit;
 
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
+import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class MoneyMonitor extends Monitor {
@@ -25,7 +29,36 @@ public class MoneyMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		// TODO: send counts to sql
+		List<String> sqls = new ArrayList<String>();
+
+		String server = NeoCore.getInstanceKey();
+		for (Entry<Rank, Double> entry : senderSums.entrySet()) {
+			String rank = entry.getKey().toString();
+			double senderSum = entry.getValue();
+			
+			double receiverSum;
+			if (receiverSums.containsKey(entry.getKey())) {
+				receiverSum = receiverSums.remove(entry.getKey());
+			} else {
+				receiverSum = 0;
+			}
+			
+			sqls.add(
+					"insert into fopzldoctor_moneyMonitor (server, rank, senderSum, receiverSum) values ('" + server + "', '" + rank + "', " + senderSum + ", "
+							+ receiverSum + ");"
+			);
+		}
+		for (Entry<Rank, Double> entry : receiverSums.entrySet()) {
+			String rank = entry.getKey().toString();
+			double receiverSum = entry.getValue();
+			
+			sqls.add(
+					"insert into fopzldoctor_moneyMonitor (server, rank, senderSum, receiverSum) values ('" + server + "', '" + rank + "', 0, " + receiverSum
+							+ ");"
+			);
+		}
+
+		permSaveData(sqls);
 		reset();
 	}
 	

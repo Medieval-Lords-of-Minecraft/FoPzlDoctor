@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -15,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Triplet;
+import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class HurtMonitor extends Monitor {
@@ -28,7 +32,21 @@ public class HurtMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		// TODO: send counts to sql
+		List<String> sqls = new ArrayList<String>();
+		String server = NeoCore.getInstanceKey();
+		for (Entry<Triplet<String, Rank, EntityDamageEvent.DamageCause>, Integer> entry : deathCounts.entrySet()) {
+			String world = entry.getKey().getValue0();
+			String rank = entry.getKey().getValue1().toString();
+			String dmgCause = entry.getKey().getValue2().toString();
+			int deathCount = entry.getValue();
+			double dmgSum = dmgSums.get(entry.getKey());
+
+			sqls.add(
+					"insert into fopzldoctor_hurtMonitor (server, world, rank, dmgCause, deathCount, dmgSum) values ('" + server + "', '" + world + "', '"
+							+ rank + "', '" + dmgCause + "', " + deathCount + ", " + dmgSum + ");"
+			);
+		}
+		permSaveData(sqls);
 		reset();
 	}
 	

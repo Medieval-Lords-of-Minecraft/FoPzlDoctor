@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -14,6 +17,7 @@ import org.bukkit.Bukkit;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Pair;
+import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class ChatMonitor extends Monitor {
@@ -26,7 +30,21 @@ public class ChatMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		// TODO: send counts to sql
+		List<String> sqls = new ArrayList<String>();
+
+		String server = NeoCore.getInstanceKey();
+		for (Entry<Pair<Rank, String>, Integer> entry : chatCounts.entrySet()) {
+			String channel = entry.getKey().getValue1();
+			String rank = entry.getKey().getValue0().toString();
+			String count = entry.getValue().toString();
+
+			sqls.add(
+					"insert into fopzldoctor_chatMonitor (server, channel, rank, count) values ('" + server + "', '" + channel + "', '" + rank + "', " + count
+							+ ");"
+			);
+		}
+
+		permSaveData(sqls);
 		reset();
 	}
 	
