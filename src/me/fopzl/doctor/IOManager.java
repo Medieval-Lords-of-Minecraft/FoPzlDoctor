@@ -20,7 +20,7 @@ import me.neoblade298.neocore.bukkit.NeoCore;
 
 public class IOManager {
 	private static DataSource src;
-	
+
 	public static void loadConfig(FileConfiguration fileConfig) {
 		HikariConfig config = new HikariConfig();
 		config.setMaximumPoolSize(20);
@@ -31,13 +31,13 @@ public class IOManager {
 		config.addDataSourceProperty("port", fileConfig.getString("port"));
 		config.addDataSourceProperty("databaseName", "mlmc");
 		config.addDataSourceProperty("encrypt", "false");
-		
+
 		src = new HikariDataSource(config);
 	}
-	
+
 	public static void saveBlobs(String classname, Map<String, Blob> blobs) throws SQLException {
 		Connection conn = src.getConnection();
-		
+
 		PreparedStatement stmt = conn.prepareStatement("insert into blobs (instanceKey, className, name, blob) values (?, ?, ?, ?);");
 		for (Entry<String, Blob> entry : blobs.entrySet()) {
 			stmt.setString(1, NeoCore.getInstanceKey());
@@ -46,26 +46,28 @@ public class IOManager {
 			stmt.setBlob(4, entry.getValue());
 			stmt.execute();
 		}
-
+		
 		stmt.close();
 		conn.close();
 	}
-
+	
 	public static Map<String, Blob> loadBlobs(String classname) throws SQLException {
 		Map<String, Blob> blobs = new HashMap<String, Blob>();
-		
-		Connection conn = src.getConnection();
-		
-		PreparedStatement stmt = conn.prepareStatement("select name, blob from blobs where instanceKey = ? and className = ?;");
-		ResultSet rs = stmt.executeQuery();
 
+		Connection conn = src.getConnection();
+
+		PreparedStatement stmt = conn.prepareStatement("select name, blob from blobs where instanceKey = ? and className = ?;");
+		stmt.setString(1, NeoCore.getInstanceKey());
+		stmt.setString(2, classname);
+		ResultSet rs = stmt.executeQuery();
+		
 		while (rs.next()) {
 			blobs.put(rs.getString("name"), rs.getBlob("blob"));
 		}
-
+		
 		stmt.close();
 		conn.close();
-		
+
 		return blobs;
 	}
 }
