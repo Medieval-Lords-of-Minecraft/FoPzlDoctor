@@ -16,12 +16,12 @@ public class MoneyListener implements Listener {
 		Player fromP = e.getRequester().getPlayer();
 		@SuppressWarnings("deprecation")
 		Player toP = e.getTarget().getBase();
-
+		
 		Rank fromRank = Doctor.getPlayerRank(fromP);
 		Rank toRank = Doctor.getPlayerRank(toP);
-
+		
 		double amt = e.getAmount().doubleValue();
-
+		
 		MoneyMonitor.addSender(fromRank, amt);
 		MoneyMonitor.addReceiver(toRank, amt);
 	}

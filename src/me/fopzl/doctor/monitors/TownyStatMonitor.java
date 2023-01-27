@@ -21,12 +21,20 @@ public class TownyStatMonitor extends Monitor {
 
 		int townPlots = 0;
 		int nationPlots = 0;
-		for(Town t : towny.getTowns()) {
+		for (Town t : towny.getTowns()) {
 			townPlots += t.getNumTownBlocks();
 		}
-		for(Nation n : towny.getNations()) {
+		for (Nation n : towny.getNations()) {
 			nationPlots += n.getNumTownblocks();
 		}
 		// TODO: send counts to sql
+	}
+	
+	@Override
+	protected void saveData() {
+	}
+
+	@Override
+	protected void loadData() {
 	}
 }

@@ -6,12 +6,29 @@ import me.neoblade298.neocore.bukkit.scheduler.SchedulerAPI;
 
 abstract class Monitor {
 	public Monitor(ScheduleInterval i) {
+		loadData();
+
 		SchedulerAPI.scheduleRepeating(getClass().getName() + "-" + NeoCore.getInstanceKey() + "-" + i.toString(), i, new Runnable() {
 			@Override
-			public void run() { update(); }}
-				);
-		// TODO: if i == daily, also schedule a separate 15m autosave to sql
+			public void run() {
+				update();
+			}
+		});
+		
+		if (i == ScheduleInterval.DAILY) {
+			SchedulerAPI
+					.scheduleRepeating(getClass().getName() + "-" + NeoCore.getInstanceKey() + "-Autosave", ScheduleInterval.FIFTEEN_MINUTES, new Runnable() {
+						@Override
+						public void run() {
+							saveData();
+						}
+					});
+		}
 	}
-
+	
 	abstract protected void update();
+	
+	abstract protected void saveData();
+	
+	abstract protected void loadData();
 }

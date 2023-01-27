@@ -1,0 +1,168 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>FoPzlDoctor</groupId>
+  <artifactId>FoPzlDoctor</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <build>
+	<sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.3.1</version>
+      </plugin>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.4.1</version>
+          <configuration>
+			  <filters>
+			        <filter>
+			            <artifact>*:*</artifact>
+			            <excludes>
+							<exclude>META-INF/*.MF</exclude>
+			                <exclude>META-INF/*.SF</exclude>
+			                <exclude>META-INF/*.DSA</exclude>
+			                <exclude>META-INF/*.RSA</exclude>
+			            </excludes>
+			        </filter>
+    			</filters>
+        		<createDependencyReducedPom>false</createDependencyReducedPom>
+          </configuration>
+          <executions>
+              <execution>
+                  <phase>package</phase>
+                  <goals>
+                      <goal>shade</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <repositories>
+    <repository>
+        <id>spigot-repo</id>
+        <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+    <repository>
+      <id>glaremasters repo</id>
+      <url>https://repo.glaremasters.me/repository/towny/</url>
+    </repository>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+		<id>essentialsx</id>
+		<url>https://repo.essentialsx.net/releases/</url>
+	</repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>1.19.3-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.palmergames.bukkit.towny</groupId>
+      <artifactId>towny</artifactId>
+      <version>0.98.5.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.MilkBowl</groupId>
+        <artifactId>VaultAPI</artifactId>
+        <version>1.7</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.github.NuVotifier.NuVotifier</groupId>
+        <artifactId>nuvotifier-bukkit</artifactId>
+        <version>2.7.2</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+		<groupId>net.essentialsx</groupId>
+		<artifactId>EssentialsX</artifactId>
+		<version>2.19.7</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+	    <groupId>com.microsoft.sqlserver</groupId>
+	    <artifactId>mssql-jdbc</artifactId>
+	    <version>11.2.3.jre17</version>
+	</dependency>
+	<dependency>
+	   <groupId>com.zaxxer</groupId>
+	   <artifactId>HikariCP</artifactId>
+	   <version>5.0.1</version>
+	</dependency>
+	<dependency>
+		<groupId>NeoCore</groupId>
+		<artifactId>NeoCore</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/NeoCore.jar</systemPath>
+		<!-- because eclipse is garbage -->
+	</dependency>
+	<dependency>
+		<groupId>NeoQuests</groupId>
+		<artifactId>NeoQuests</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/NeoQuests.jar</systemPath>
+		<!-- see above -->
+	</dependency>
+	<dependency>
+		<groupId>NeoBossInstances</groupId>
+		<artifactId>NeoBossInstances</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/NeoBossInstances.jar</systemPath>
+		<!-- see above -->
+	</dependency>
+	<dependency>
+		<groupId>SkillAPI</groupId>
+		<artifactId>SkillAPI</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/SkillAPI.jar</systemPath>
+		<!-- see above -->
+	</dependency>
+	<dependency>
+		<groupId>ChatControlRed</groupId>
+		<artifactId>ChatControlRed</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/ChatControl-Red-10.16.2.jar</systemPath>
+		<!-- see above -->
+	</dependency>
+	<dependency>
+		<groupId>spark</groupId>
+		<artifactId>spark</artifactId>
+		<version>1.0</version>
+		<scope>system</scope>
+		<systemPath>C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/resources/spark-1.10.26-bukkit.jar</systemPath>
+		<!-- see above -->
+	</dependency>
+  </dependencies>
+  
+</project>

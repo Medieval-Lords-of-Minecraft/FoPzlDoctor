@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
 		<attributes>
-			<attribute name="module" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/spigot-api-1.19.3-R0.1-20230112.085520-27-shaded.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/nuvotifier.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/SkillAPI.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoQuests.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoBossInstances.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/spark-1.10.26-bukkit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/ChatControl-Red-10.16.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/Vault.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/NeoCore.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/EssentialsX-2.19.7.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Alex/Documents/MLMC/Coding Stuff/workspace/FoPzlDoctor/src/dependencies/Towny-0.98.6.0.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

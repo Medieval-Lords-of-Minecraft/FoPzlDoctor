@@ -15,10 +15,10 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-
-		if(p.hasPlayedBefore()) {
+		
+		if (p.hasPlayedBefore()) {
 			LoginMonitor.tryIncPlayer(p.getUniqueId());
-		} else if(NeoCore.getInstanceType() == InstanceType.HUB) {
+		} else if (NeoCore.getInstanceType() == InstanceType.HUB) {
 			OnlineMonitor.incNewbie();
 		}
 	}

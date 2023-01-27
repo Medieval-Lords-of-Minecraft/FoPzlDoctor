@@ -1,9 +1,18 @@
 package me.fopzl.doctor.monitors;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Blob;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.bukkit.Bukkit;
+
 import me.fopzl.doctor.Doctor.Rank;
+import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Triplet;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
@@ -21,6 +30,41 @@ public class QuestMonitor extends Monitor {
 	protected void update() {
 		// TODO: send counts to sql
 		reset();
+	}
+	
+	@Override
+	protected void saveData() {
+		try {
+			Map<String, Blob> blobs = new HashMap<String, Blob>();
+
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			new ObjectOutputStream(bytes).writeObject(levelupCounts);
+			blobs.put("levelupCounts", new SerialBlob(bytes.toByteArray()));
+
+			bytes.flush();
+			new ObjectOutputStream(bytes).writeObject(questCompleteCounts);
+			blobs.put("questCompleteCounts", new SerialBlob(bytes.toByteArray()));
+
+			bytes.close();
+
+			IOManager.saveBlobs(getClass().getName(), blobs);
+		} catch (Exception e) {
+			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void loadData() {
+		try {
+			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
+			levelupCounts = (Map<Rank, Integer>) (new ObjectInputStream(blobs.get("levelupCounts").getBinaryStream()).readObject());
+			questCompleteCounts = (Map<Rank, Integer>) (new ObjectInputStream(blobs.get("questCompleteCounts").getBinaryStream()).readObject());
+		} catch (Exception e) {
+			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");
+			e.printStackTrace();
+		}
 	}
 
 	private static void reset() {

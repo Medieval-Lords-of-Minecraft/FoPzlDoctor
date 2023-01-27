@@ -14,7 +14,7 @@ public class EntityListener implements Listener {
 	public void onEntitySpawn(EntitySpawnEvent e) {
 		World w = e.getEntity().getWorld();
 		EntityType type = e.getEntityType();
-
+		
 		EntityMonitor.inc(w, type);
 	}
 }

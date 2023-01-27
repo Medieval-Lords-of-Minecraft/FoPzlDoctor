@@ -20,10 +20,18 @@ public class LagMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		for(World w : Bukkit.getWorlds()) {
+		for (World w : Bukkit.getWorlds()) {
 			double cpu = spark.cpuProcess().poll(CpuUsage.MINUTES_15); // because spark
 			double tps = spark.tps().poll(TicksPerSecond.MINUTES_15); // same
 		}
 		// TODO: send counts to sql
+	}
+	
+	@Override
+	protected void saveData() {
+	}
+
+	@Override
+	protected void loadData() {
 	}
 }

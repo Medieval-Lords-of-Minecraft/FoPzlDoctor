@@ -1,6 +1,10 @@
 package me.fopzl.doctor;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,29 +37,44 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Doctor extends JavaPlugin {
 	private static Permission perms;
-
+	
 	@Override
 	public void onEnable() {
 		super.onEnable();
-
+		
 		perms = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
-
+		
+		loadConfig();
+		
 		setupListeners();
 		setupMonitors();
-
+		
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Enabled");
 	}
-
+	
 	@Override
 	public void onDisable() {
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Disabled");
-
+		
 		super.onDisable();
 	}
 
+	private void loadConfig() {
+		// Save config if doesn't exist
+		File file = new File(getDataFolder(), "config.yml");
+		if (!file.exists()) {
+			saveResource("config.yml", false);
+		}
+		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+		IOManager.loadConfig(config);
+		
+		// todo: more
+	}
+	
 	private void setupListeners() {
 		PluginManager pm = getServer().getPluginManager();
-		switch(NeoCore.getInstanceType()) {
+		switch (NeoCore.getInstanceType()) {
 		case TOWNY:
 			pm.registerEvents(new BlockListener(), this);
 			pm.registerEvents(new ChatListener(), this);
@@ -97,10 +116,10 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-
+	
 	private void setupMonitors() {
 		// TODO for long-interval monitors: add sql autosaving or something (keep data through restarts)
-		switch(NeoCore.getInstanceType()) {
+		switch (NeoCore.getInstanceType()) {
 		case TOWNY:
 			new BlockMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new ChatMonitor(ScheduleInterval.FIFTEEN_MINUTES);
@@ -154,17 +173,16 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-
+	
 	public enum Rank {
 		PAID, STAFF, NONE
 	}
+	
 	public static Rank getPlayerRank(Player p) {
 		if (perms.playerHas(p, "Vote.Staff")) {
 			return Rank.STAFF;
-		} else if(perms.playerHas(p, "Vote.Diamond") ||
-				perms.playerHas(p, "Vote.Emerald") ||
-				perms.playerHas(p, "Vote.Sapphire") ||
-				perms.playerHas(p, "Vote.Ruby") ) {
+		} else if (perms.playerHas(p, "Vote.Diamond") || perms.playerHas(p, "Vote.Emerald") || perms.playerHas(p, "Vote.Sapphire")
+				|| perms.playerHas(p, "Vote.Ruby")) {
 			return Rank.PAID;
 		} else {
 			return Rank.NONE;

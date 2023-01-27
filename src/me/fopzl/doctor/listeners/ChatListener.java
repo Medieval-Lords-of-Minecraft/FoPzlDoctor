@@ -14,22 +14,24 @@ import me.fopzl.doctor.monitors.ChatMonitor;
 public class ChatListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChat(ChatChannelEvent e) {
-		if(!(e.getSender() instanceof Player)) return;
-		Player sender = (Player)e.getSender();
-
+		if (!(e.getSender() instanceof Player))
+			return;
+		Player sender = (Player) e.getSender();
+		
 		Rank rank = Doctor.getPlayerRank(sender);
 		String channel = e.getChannel().getName();
-
+		
 		ChatMonitor.inc(rank, channel);
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onMessage(PrePrivateMessageEvent e) {
-		if(!(e.getSender() instanceof Player)) return;
-
-		Player sender = (Player)e.getSender();
+		if (!(e.getSender() instanceof Player))
+			return;
+		
+		Player sender = (Player) e.getSender();
 		Rank rank = Doctor.getPlayerRank(sender);
-
+		
 		ChatMonitor.inc(rank, "message");
 	}
 }
