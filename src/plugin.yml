@@ -1,7 +1,7 @@
 name: FoPzlDoctor
 main: me.fopzl.doctor.Doctor
-author: [FoPzl]
-depend: [NeoCore]
-softdepend: [SkillAPI]
-version: 0.1
+author: FoPzl
+depend: [NeoCore, Vault]
+softdepend: [ChatControlRed, Essentials, NeoBossInstances, NeoQuests, SkillAPI, spark, Towny, Votifier]
+version: 1.0
 api-version: 1.19
