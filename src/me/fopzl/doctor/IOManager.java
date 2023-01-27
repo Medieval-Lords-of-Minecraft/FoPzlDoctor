@@ -5,12 +5,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -38,7 +40,7 @@ public class IOManager {
 	public static void saveBlobs(String classname, Map<String, Blob> blobs) throws SQLException {
 		Connection conn = src.getConnection();
 
-		PreparedStatement stmt = conn.prepareStatement("insert into blobs (instanceKey, className, name, blob) values (?, ?, ?, ?);");
+		PreparedStatement stmt = conn.prepareStatement("insert into fopzldoctor_blobs (instanceKey, className, name, blob) values (?, ?, ?, ?);");
 		for (Entry<String, Blob> entry : blobs.entrySet()) {
 			stmt.setString(1, NeoCore.getInstanceKey());
 			stmt.setString(2, classname);
@@ -56,7 +58,7 @@ public class IOManager {
 
 		Connection conn = src.getConnection();
 
-		PreparedStatement stmt = conn.prepareStatement("select name, blob from blobs where instanceKey = ? and className = ?;");
+		PreparedStatement stmt = conn.prepareStatement("select name, blob from fopzldoctor_blobs where instanceKey = ? and className = ?;");
 		stmt.setString(1, NeoCore.getInstanceKey());
 		stmt.setString(2, classname);
 		ResultSet rs = stmt.executeQuery();
@@ -69,5 +71,20 @@ public class IOManager {
 		conn.close();
 
 		return blobs;
+	}
+	
+	public static void writeToSQL(String sqlStatement) {
+		try {
+			Connection conn = src.getConnection();
+			Statement stmt = conn.createStatement();
+			
+			stmt.execute(sqlStatement);
+			
+			stmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			Bukkit.getLogger().warning("[DOCTOR] Exception writing SQL: " + sqlStatement);
+			e.printStackTrace();
+		}
 	}
 }

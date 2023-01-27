@@ -17,34 +17,34 @@ import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 public class VoteMonitor extends Monitor {
 	// Key is votesite
 	private static Map<String, Integer> votesiteCounts = new HashMap<String, Integer>();
-
+	
 	public VoteMonitor(ScheduleInterval i) {
 		super(i);
 	}
-
+	
 	@Override
 	protected void update() {
 		// TODO: send counts to sql
 		reset();
 	}
-	
+
 	@Override
 	protected void saveData() {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-
+			
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			new ObjectOutputStream(bytes).writeObject(votesiteCounts);
 			blobs.put("votesiteCounts", new SerialBlob(bytes.toByteArray()));
 			bytes.close();
-
+			
 			IOManager.saveBlobs(getClass().getName(), blobs);
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
 			e.printStackTrace();
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void loadData() {
@@ -56,11 +56,11 @@ public class VoteMonitor extends Monitor {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private static void reset() {
 		votesiteCounts.clear();
 	}
-
+	
 	public static void inc(String votesite) {
 		votesiteCounts.put(votesite, votesiteCounts.getOrDefault(votesite, 0) + 1);
 	}

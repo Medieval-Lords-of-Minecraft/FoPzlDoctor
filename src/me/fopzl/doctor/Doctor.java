@@ -37,28 +37,28 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Doctor extends JavaPlugin {
 	private static Permission perms;
-	
+
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		
+
 		perms = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
-		
+
 		loadConfig();
-		
+
 		setupListeners();
 		setupMonitors();
-		
+
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Enabled");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Disabled");
-		
+
 		super.onDisable();
 	}
-
+	
 	private void loadConfig() {
 		// Save config if doesn't exist
 		File file = new File(getDataFolder(), "config.yml");
@@ -66,12 +66,12 @@ public class Doctor extends JavaPlugin {
 			saveResource("config.yml", false);
 		}
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-		IOManager.loadConfig(config);
 		
+		IOManager.loadConfig(config);
+
 		// todo: more
 	}
-	
+
 	private void setupListeners() {
 		PluginManager pm = getServer().getPluginManager();
 		switch (NeoCore.getInstanceType()) {
@@ -116,9 +116,8 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-	
+
 	private void setupMonitors() {
-		// TODO for long-interval monitors: add sql autosaving or something (keep data through restarts)
 		switch (NeoCore.getInstanceType()) {
 		case TOWNY:
 			new BlockMonitor(ScheduleInterval.FIFTEEN_MINUTES);
@@ -173,11 +172,11 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-	
+
 	public enum Rank {
 		PAID, STAFF, NONE
 	}
-	
+
 	public static Rank getPlayerRank(Player p) {
 		if (perms.playerHas(p, "Vote.Staff")) {
 			return Rank.STAFF;
