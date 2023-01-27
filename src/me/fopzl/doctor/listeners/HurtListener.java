@@ -1,6 +1,5 @@
 package me.fopzl.doctor.listeners;
 
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,7 @@ public class HurtListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Player p = e.getEntity();
 		
-		World world = p.getWorld();
+		String world = p.getWorld().getName();
 		Rank rank = Doctor.getPlayerRank(p);
 		EntityDamageEvent.DamageCause cause = p.getLastDamageCause().getCause();
 		
@@ -32,7 +31,7 @@ public class HurtListener implements Listener {
 		
 		Player p = (Player) e.getEntity();
 		
-		World world = p.getWorld();
+		String world = p.getWorld().getName();
 		Rank rank = Doctor.getPlayerRank(p);
 		EntityDamageEvent.DamageCause cause = e.getCause();
 		double dmg = e.getFinalDamage();
