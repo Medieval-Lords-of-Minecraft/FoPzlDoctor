@@ -15,6 +15,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import org.bukkit.Bukkit;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Triplet;
@@ -25,11 +26,11 @@ public class HurtMonitor extends Monitor {
 	// String in key is world name
 	private static Map<Triplet<String, Rank, EntityDamageEvent.DamageCause>, Integer> deathCounts = new HashMap<Triplet<String, Rank, EntityDamageEvent.DamageCause>, Integer>();
 	private static Map<Triplet<String, Rank, EntityDamageEvent.DamageCause>, Double> dmgSums = new HashMap<Triplet<String, Rank, EntityDamageEvent.DamageCause>, Double>();
-
+	
 	public HurtMonitor(ScheduleInterval i) {
 		super(i);
 	}
-
+	
 	@Override
 	protected void update() {
 		List<String> sqls = new ArrayList<String>();
@@ -40,7 +41,7 @@ public class HurtMonitor extends Monitor {
 			String dmgCause = entry.getKey().getValue2().toString();
 			int deathCount = entry.getValue();
 			double dmgSum = dmgSums.get(entry.getKey());
-
+			
 			sqls.add(
 					"insert into fopzldoctor_hurtMonitor (server, world, rank, dmgCause, deathCount, dmgSum) values ('" + server + "', '" + world + "', '"
 							+ rank + "', '" + dmgCause + "', " + deathCount + ", " + dmgSum + ");"
@@ -49,29 +50,29 @@ public class HurtMonitor extends Monitor {
 		permSaveData(sqls);
 		reset();
 	}
-	
+
 	@Override
 	protected void saveData() {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-
+			
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			new ObjectOutputStream(bytes).writeObject(deathCounts);
 			blobs.put("deathCounts", new SerialBlob(bytes.toByteArray()));
-
+			
 			bytes.flush();
 			new ObjectOutputStream(bytes).writeObject(dmgSums);
 			blobs.put("dmgSums", new SerialBlob(bytes.toByteArray()));
-
+			
 			bytes.close();
-
+			
 			IOManager.saveBlobs(getClass().getName(), blobs);
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
 			e.printStackTrace();
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void loadData() {
@@ -87,17 +88,17 @@ public class HurtMonitor extends Monitor {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private static void reset() {
 		deathCounts.clear();
 		dmgSums.clear();
 	}
-
+	
 	public static void incDeath(String worldName, Rank rank, EntityDamageEvent.DamageCause cause) {
 		Triplet<String, Rank, EntityDamageEvent.DamageCause> triple = Triplet.with(worldName, rank, cause);
 		deathCounts.put(triple, deathCounts.getOrDefault(triple, 0) + 1);
 	}
-
+	
 	public static void addDamage(String worldName, Rank rank, EntityDamageEvent.DamageCause cause, double amt) {
 		Triplet<String, Rank, EntityDamageEvent.DamageCause> triple = Triplet.with(worldName, rank, cause);
 		dmgSums.put(triple, dmgSums.getOrDefault(triple, 0D) + amt);

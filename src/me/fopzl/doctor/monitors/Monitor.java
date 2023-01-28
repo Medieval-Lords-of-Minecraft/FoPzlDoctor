@@ -1,20 +1,18 @@
 package me.fopzl.doctor.monitors;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.IOManager;
-import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
-import me.neoblade298.neocore.bukkit.scheduler.SchedulerAPI;
 
 abstract class Monitor {
 	public Monitor(ScheduleInterval i) {
 		loadData();
-
-		SchedulerAPI.scheduleRepeating("FoPzlDoctor-" + getClass().getName() + "-" + NeoCore.getInstanceKey() + "-" + i.toString(), i, new Runnable() {
+		
+		Doctor.getInstance().addToScheduler(i, new BukkitRunnable() {
 			@Override
 			public void run() {
 				update();
@@ -22,14 +20,12 @@ abstract class Monitor {
 		});
 		
 		if (i == ScheduleInterval.DAILY) {
-			SchedulerAPI.scheduleRepeating(
-					"FoPzlDoctor-" + getClass().getName() + "-" + NeoCore.getInstanceKey() + "-Autosave", ScheduleInterval.FIFTEEN_MINUTES, new Runnable() {
-						@Override
-						public void run() {
-							saveData();
-						}
-					}
-			);
+			Doctor.getInstance().addToScheduler(ScheduleInterval.FIFTEEN_MINUTES, new BukkitRunnable() {
+				@Override
+				public void run() {
+					update();
+				}
+			});
 		}
 	}
 	
@@ -44,11 +40,6 @@ abstract class Monitor {
 
 	// for permanently saving data in a useful format
 	protected void permSaveData(List<String> sqlStatements) {
-		try {
-			IOManager.writeToSQL(sqlStatements);
-		} catch (SQLException e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception writing SQL for " + getClass().getName() + ":");
-			e.printStackTrace();
-		}
+		IOManager.writeToSQL(sqlStatements);
 	}
 }

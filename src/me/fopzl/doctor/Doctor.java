@@ -1,6 +1,11 @@
 package me.fopzl.doctor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.fopzl.doctor.listeners.BlockListener;
 import me.fopzl.doctor.listeners.ChatListener;
@@ -33,22 +39,37 @@ import me.fopzl.doctor.monitors.TownyStatMonitor;
 import me.fopzl.doctor.monitors.VoteMonitor;
 import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
+import me.neoblade298.neocore.bukkit.scheduler.SchedulerAPI;
 import net.milkbowl.vault.permission.Permission;
 
 public class Doctor extends JavaPlugin {
+	private static Doctor instance;
 	private static Permission perms;
+	private static Map<ScheduleInterval, List<BukkitRunnable>> schedulers;
 	
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		
+
+		instance = this;
+
 		perms = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
-		
+
 		loadConfig();
-		
+
+		schedulers = new HashMap<ScheduleInterval, List<BukkitRunnable>>();
+
 		setupListeners();
 		setupMonitors();
-		
+
+		for (Entry<ScheduleInterval, List<BukkitRunnable>> list : schedulers.entrySet()) {
+			SchedulerAPI.scheduleRepeating("FoPzlDoctor-" + list.getKey(), list.getKey(), () -> {
+				for (BukkitRunnable r : list.getValue()) {
+					r.runTaskAsynchronously(this);
+				}
+			});
+		}
+
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Enabled");
 	}
 	
@@ -68,6 +89,16 @@ public class Doctor extends JavaPlugin {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 		IOManager.loadConfig(config);
+	}
+
+	public static Doctor getInstance() {
+		return instance;
+	}
+
+	public void addToScheduler(ScheduleInterval interval, BukkitRunnable runnable) {
+		List<BukkitRunnable> list = schedulers.getOrDefault(interval, new ArrayList<BukkitRunnable>());
+		list.add(runnable);
+		schedulers.putIfAbsent(interval, list);
 	}
 	
 	private void setupListeners() {
