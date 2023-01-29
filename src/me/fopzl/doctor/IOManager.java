@@ -32,10 +32,10 @@ public class IOManager {
 		config.addDataSourceProperty("serverName", fileConfig.getString("ip"));
 		config.addDataSourceProperty("user", fileConfig.getString("user"));
 		config.addDataSourceProperty("password", fileConfig.getString("password"));
-		config.addDataSourceProperty("port", fileConfig.getString("port"));
+		config.addDataSourceProperty("portNumber", fileConfig.getString("port"));
 		config.addDataSourceProperty("databaseName", "mlmc");
 		config.addDataSourceProperty("encrypt", "false");
-
+		
 		src = new HikariDataSource(config);
 	}
 

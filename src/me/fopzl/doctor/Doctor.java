@@ -46,22 +46,22 @@ public class Doctor extends JavaPlugin {
 	private static Doctor instance;
 	private static Permission perms;
 	private static Map<ScheduleInterval, List<BukkitRunnable>> schedulers;
-	
+
 	@Override
 	public void onEnable() {
 		super.onEnable();
-
+		
 		instance = this;
-
+		
 		perms = getServer().getServicesManager().getRegistration(Permission.class).getProvider();
-
+		
 		loadConfig();
-
+		
 		schedulers = new HashMap<ScheduleInterval, List<BukkitRunnable>>();
-
+		
 		setupListeners();
 		setupMonitors();
-
+		
 		for (Entry<ScheduleInterval, List<BukkitRunnable>> list : schedulers.entrySet()) {
 			SchedulerAPI.scheduleRepeating("FoPzlDoctor-" + list.getKey(), list.getKey(), () -> {
 				for (BukkitRunnable r : list.getValue()) {
@@ -69,17 +69,17 @@ public class Doctor extends JavaPlugin {
 				}
 			});
 		}
-
+		
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Enabled");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Disabled");
-		
+
 		super.onDisable();
 	}
-
+	
 	private void loadConfig() {
 		// Save config if doesn't exist
 		File file = new File(getDataFolder(), "config.yml");
@@ -87,20 +87,20 @@ public class Doctor extends JavaPlugin {
 			saveResource("config.yml", false);
 		}
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
+		
 		IOManager.loadConfig(config);
 	}
-
+	
 	public static Doctor getInstance() {
 		return instance;
 	}
-
+	
 	public void addToScheduler(ScheduleInterval interval, BukkitRunnable runnable) {
 		List<BukkitRunnable> list = schedulers.getOrDefault(interval, new ArrayList<BukkitRunnable>());
 		list.add(runnable);
 		schedulers.putIfAbsent(interval, list);
 	}
-	
+
 	private void setupListeners() {
 		PluginManager pm = getServer().getPluginManager();
 		switch (NeoCore.getInstanceType()) {
@@ -145,7 +145,7 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-	
+
 	private void setupMonitors() {
 		switch (NeoCore.getInstanceType()) {
 		case TOWNY:
@@ -201,10 +201,10 @@ public class Doctor extends JavaPlugin {
 			return;
 		}
 	}
-	
+
 	public enum Rank {
 		PAID, STAFF, NONE;
-		
+
 		public static Rank getPlayerRank(Player p) {
 			if (perms.playerHas(p, "Vote.Staff")) {
 				return Rank.STAFF;
@@ -216,16 +216,16 @@ public class Doctor extends JavaPlugin {
 			}
 		}
 	}
-
+	
 	public enum QuestLevelGroup {
 		T2LOW("1-9"), T2MID("10-19"), T2HIGH("20-29"), T3LOW("30-39"), T3MID("40-49"), T3HIGH("50-59"), MAX("60"); // will need to update when T4 comes out in 10 years
-
+		
 		private final String text;
-
+		
 		QuestLevelGroup(final String text) {
 			this.text = text;
 		}
-
+		
 		public static QuestLevelGroup fromLevel(int lvl) {
 			if (lvl < 10)
 				return T2LOW;
@@ -241,7 +241,7 @@ public class Doctor extends JavaPlugin {
 				return T3HIGH;
 			return MAX;
 		}
-
+		
 		@Override
 		public String toString() {
 			return text;

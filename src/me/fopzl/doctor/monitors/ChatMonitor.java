@@ -14,7 +14,6 @@ import javax.sql.rowset.serial.SerialBlob;
 
 import org.bukkit.Bukkit;
 
-import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Pair;

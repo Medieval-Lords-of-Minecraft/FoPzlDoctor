@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 
 import com.earth2me.essentials.Essentials;
 
-import me.fopzl.doctor.Doctor;
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Triplet;
@@ -27,14 +26,14 @@ import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class OnlineMonitor extends Monitor {
 	private static Essentials ess;
-	
+
 	private static int newPlayers = 0;
-	
+
 	public OnlineMonitor(ScheduleInterval i) {
 		super(i);
 		ess = Bukkit.getServicesManager().getRegistration(Essentials.class).getProvider();
 	}
-	
+
 	@Override
 	protected void update() {
 		Map<Triplet<World, Rank, Boolean>, Integer> activityCounts = new HashMap<Triplet<World, Rank, Boolean>, Integer>();
@@ -42,11 +41,11 @@ public class OnlineMonitor extends Monitor {
 			World w = p.getWorld();
 			Rank r = Rank.getPlayerRank(p);
 			boolean afk = ess.getUser(p).isAfk();
-			
+
 			Triplet<World, Rank, Boolean> triplet = Triplet.with(w, r, afk);
 			activityCounts.put(triplet, activityCounts.getOrDefault(triplet, 0) + 1);
 		}
-		
+
 		List<String> sqls = new ArrayList<String>();
 		String server = NeoCore.getInstanceKey();
 		for (Entry<Triplet<World, Rank, Boolean>, Integer> entry : activityCounts.entrySet()) {
@@ -54,37 +53,37 @@ public class OnlineMonitor extends Monitor {
 			String rank = entry.getKey().getValue1().toString();
 			int afk = entry.getKey().getValue2() ? 1 : 0;
 			int count = entry.getValue();
-			
+
 			sqls.add(
 					"insert into fopzldoctor_onlineMonitor_activity (server, world, rank, afk, count) values ('" + server + "', '" + world + "', '" + rank
 							+ "', " + afk + ", " + count + ");"
 			);
 		}
-		
+
 		sqls.add("insert into fopzldoctor_onlineMonitor_newPlayers (server, count) values ('" + server + "', " + newPlayers + ");");
-		
+
 		permSaveData(sqls);
 		reset();
 	}
-
+	
 	@Override
 	protected void saveData() {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-			
+
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			new ObjectOutputStream(bytes).writeObject(newPlayers);
 			blobs.put("newPlayers", new SerialBlob(bytes.toByteArray()));
-			
+
 			bytes.close();
-			
+
 			IOManager.saveBlobs(getClass().getName(), blobs);
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	protected void loadData() {
 		try {
@@ -95,11 +94,11 @@ public class OnlineMonitor extends Monitor {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void reset() {
 		newPlayers = 0;
 	}
-	
+
 	public static void incNewbie() {
 		newPlayers++;
 	}
