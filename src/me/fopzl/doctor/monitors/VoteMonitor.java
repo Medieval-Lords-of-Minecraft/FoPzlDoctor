@@ -63,6 +63,9 @@ public class VoteMonitor extends Monitor {
 	protected void loadData() {
 		try {
 			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
+			if (blobs == null || blobs.isEmpty())
+				return;
+
 			votesiteCounts = (Map<String, Integer>) (new ObjectInputStream(blobs.get("votesiteCounts").getBinaryStream()).readObject());
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");

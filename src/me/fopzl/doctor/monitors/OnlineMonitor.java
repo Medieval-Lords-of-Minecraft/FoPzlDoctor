@@ -16,7 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.IEssentials;
 
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
@@ -25,13 +25,13 @@ import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class OnlineMonitor extends Monitor {
-	private static Essentials ess;
+	private static IEssentials ess;
 
 	private static int newPlayers = 0;
 
 	public OnlineMonitor(ScheduleInterval i) {
 		super(i);
-		ess = Bukkit.getServicesManager().getRegistration(Essentials.class).getProvider();
+		ess = (IEssentials) Bukkit.getPluginManager().getPlugin("Essentials");
 	}
 
 	@Override
@@ -88,6 +88,9 @@ public class OnlineMonitor extends Monitor {
 	protected void loadData() {
 		try {
 			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
+			if (blobs == null || blobs.isEmpty())
+				return;
+			
 			newPlayers = (Integer) (new ObjectInputStream(blobs.get("newPlayers").getBinaryStream()).readObject());
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");
