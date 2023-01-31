@@ -46,6 +46,7 @@ public class Doctor extends JavaPlugin {
 	private static Doctor instance;
 	private static Permission perms;
 	private static Map<ScheduleInterval, List<BukkitRunnable>> schedulers;
+	private static List<BukkitRunnable> cleanupList;
 	
 	@Override
 	public void onEnable() {
@@ -58,6 +59,7 @@ public class Doctor extends JavaPlugin {
 		loadConfig();
 
 		schedulers = new HashMap<ScheduleInterval, List<BukkitRunnable>>();
+		cleanupList = new ArrayList<BukkitRunnable>();
 
 		setupListeners();
 		setupMonitors();
@@ -75,9 +77,24 @@ public class Doctor extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		cleanup();
+
 		Bukkit.getServer().getLogger().info("FoPzlDoctor Disabled");
-		
 		super.onDisable();
+	}
+
+	public static Doctor getInstance() {
+		return instance;
+	}
+
+	public static void addToScheduler(ScheduleInterval interval, BukkitRunnable runnable) {
+		List<BukkitRunnable> list = schedulers.getOrDefault(interval, new ArrayList<BukkitRunnable>());
+		list.add(runnable);
+		schedulers.putIfAbsent(interval, list);
+	}
+	
+	public static void addToCleanup(BukkitRunnable runnable) {
+		cleanupList.add(runnable);
 	}
 
 	private void loadConfig() {
@@ -90,15 +107,11 @@ public class Doctor extends JavaPlugin {
 
 		IOManager.loadConfig(config);
 	}
-
-	public static Doctor getInstance() {
-		return instance;
-	}
-
-	public void addToScheduler(ScheduleInterval interval, BukkitRunnable runnable) {
-		List<BukkitRunnable> list = schedulers.getOrDefault(interval, new ArrayList<BukkitRunnable>());
-		list.add(runnable);
-		schedulers.putIfAbsent(interval, list);
+	
+	private void cleanup() {
+		for (BukkitRunnable run : cleanupList) {
+			run.runTask(this);
+		}
 	}
 	
 	private void setupListeners() {

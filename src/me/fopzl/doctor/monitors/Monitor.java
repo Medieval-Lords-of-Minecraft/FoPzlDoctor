@@ -12,20 +12,23 @@ abstract class Monitor {
 	public Monitor(ScheduleInterval i) {
 		loadData();
 		
-		Doctor.getInstance().addToScheduler(i, new BukkitRunnable() {
+		Doctor.addToScheduler(i, new BukkitRunnable() {
 			@Override
 			public void run() {
 				update();
 			}
 		});
 		
+		BukkitRunnable save = new BukkitRunnable() {
+			@Override
+			public void run() {
+				saveData();
+			}
+		};
+
+		Doctor.addToCleanup(save);
 		if (i == ScheduleInterval.DAILY) {
-			Doctor.getInstance().addToScheduler(ScheduleInterval.FIFTEEN_MINUTES, new BukkitRunnable() {
-				@Override
-				public void run() {
-					update();
-				}
-			});
+			Doctor.addToScheduler(ScheduleInterval.FIFTEEN_MINUTES, save);
 		}
 	}
 	
