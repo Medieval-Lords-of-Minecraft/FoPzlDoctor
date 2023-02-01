@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import me.fopzl.doctor.listeners.BlockListener;
 import me.fopzl.doctor.listeners.ChatListener;
@@ -45,8 +44,8 @@ import net.milkbowl.vault.permission.Permission;
 public class Doctor extends JavaPlugin {
 	private static Doctor instance;
 	private static Permission perms;
-	private static Map<ScheduleInterval, List<BukkitRunnable>> schedulers;
-	private static List<BukkitRunnable> cleanupList;
+	private static Map<ScheduleInterval, List<Runnable>> schedulers;
+	private static List<Runnable> cleanupList;
 	
 	@Override
 	public void onEnable() {
@@ -58,16 +57,16 @@ public class Doctor extends JavaPlugin {
 
 		loadConfig();
 
-		schedulers = new HashMap<ScheduleInterval, List<BukkitRunnable>>();
-		cleanupList = new ArrayList<BukkitRunnable>();
+		schedulers = new HashMap<ScheduleInterval, List<Runnable>>();
+		cleanupList = new ArrayList<Runnable>();
 
 		setupListeners();
 		setupMonitors();
 
-		for (Entry<ScheduleInterval, List<BukkitRunnable>> list : schedulers.entrySet()) {
+		for (Entry<ScheduleInterval, List<Runnable>> list : schedulers.entrySet()) {
 			SchedulerAPI.scheduleRepeating("FoPzlDoctor-" + list.getKey(), list.getKey(), () -> {
-				for (BukkitRunnable r : list.getValue()) {
-					r.runTask(this);
+				for (Runnable r : list.getValue()) {
+					r.run();
 				}
 			});
 		}
@@ -87,13 +86,13 @@ public class Doctor extends JavaPlugin {
 		return instance;
 	}
 
-	public static void addToScheduler(ScheduleInterval interval, BukkitRunnable runnable) {
-		List<BukkitRunnable> list = schedulers.getOrDefault(interval, new ArrayList<BukkitRunnable>());
+	public static void addToScheduler(ScheduleInterval interval, Runnable runnable) {
+		List<Runnable> list = schedulers.getOrDefault(interval, new ArrayList<Runnable>());
 		list.add(runnable);
 		schedulers.putIfAbsent(interval, list);
 	}
 	
-	public static void addToCleanup(BukkitRunnable runnable) {
+	public static void addToCleanup(Runnable runnable) {
 		cleanupList.add(runnable);
 	}
 
@@ -109,8 +108,8 @@ public class Doctor extends JavaPlugin {
 	}
 	
 	private void cleanup() {
-		for (BukkitRunnable run : cleanupList) {
-			run.runTask(this);
+		for (Runnable run : cleanupList) {
+			run.run();
 		}
 	}
 	
