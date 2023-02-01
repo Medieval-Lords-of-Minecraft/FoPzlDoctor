@@ -195,14 +195,12 @@ public class Doctor extends JavaPlugin {
 		case CREATIVE:
 			new BlockMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new ChatMonitor(ScheduleInterval.FIFTEEN_MINUTES);
-			new LagMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new LoginMonitor(ScheduleInterval.DAILY);
 			new MoneyMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new OnlineMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			return;
 		case HUB:
 			new ChatMonitor(ScheduleInterval.FIFTEEN_MINUTES);
-			new LagMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new LoginMonitor(ScheduleInterval.DAILY);
 			new MoneyMonitor(ScheduleInterval.FIFTEEN_MINUTES);
 			new OnlineMonitor(ScheduleInterval.FIFTEEN_MINUTES);
