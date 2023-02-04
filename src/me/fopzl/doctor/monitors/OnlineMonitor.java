@@ -20,7 +20,7 @@ import com.earth2me.essentials.IEssentials;
 
 import me.fopzl.doctor.Doctor.Rank;
 import me.fopzl.doctor.IOManager;
-import me.fopzl.doctor.util.tuples.Triplet;
+import me.fopzl.doctor.util.tuples.Pair;
 import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
@@ -36,27 +36,34 @@ public class OnlineMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		Map<Triplet<World, Rank, Boolean>, Integer> activityCounts = new HashMap<Triplet<World, Rank, Boolean>, Integer>();
+		// value item1 is afk count, item2 is active/non-afk count
+		Map<Pair<World, Rank>, Pair<Integer, Integer>> activityCounts = new HashMap<Pair<World, Rank>, Pair<Integer, Integer>>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			World w = p.getWorld();
 			Rank r = Rank.getPlayerRank(p);
 			boolean afk = ess.getUser(p).isAfk();
 
-			Triplet<World, Rank, Boolean> triplet = Triplet.with(w, r, afk);
-			activityCounts.put(triplet, activityCounts.getOrDefault(triplet, 0) + 1);
+			Pair<World, Rank> key = Pair.with(w, r);
+			Pair<Integer, Integer> value = activityCounts.getOrDefault(key, Pair.with(0, 0));
+			if (afk) {
+				value.setAt0(value.getValue0() + 1);
+			} else {
+				value.setAt1(value.getValue1() + 1);
+			}
+			activityCounts.putIfAbsent(key, value);
 		}
 
 		List<String> sqls = new ArrayList<String>();
 		String server = NeoCore.getInstanceKey();
-		for (Entry<Triplet<World, Rank, Boolean>, Integer> entry : activityCounts.entrySet()) {
+		for (Entry<Pair<World, Rank>, Pair<Integer, Integer>> entry : activityCounts.entrySet()) {
 			String world = entry.getKey().getValue0().getName();
 			String rank = entry.getKey().getValue1().toString();
-			int afk = entry.getKey().getValue2() ? 1 : 0;
-			int count = entry.getValue();
+			int afkCount = entry.getValue().getValue0();
+			int activeCount = entry.getValue().getValue1();
 
 			sqls.add(
-					"insert into fopzldoctor_onlineMonitor_activity (server, world, rank, afk, count) values ('" + server + "', '" + world + "', '" + rank
-							+ "', " + afk + ", " + count + ");"
+					"insert into fopzldoctor_onlineMonitor_activity (server, world, rank, afkCount, activeCount) values ('" + server + "', '" + world + "', '"
+							+ rank + "', " + afkCount + ", " + activeCount + ");"
 			);
 		}
 
