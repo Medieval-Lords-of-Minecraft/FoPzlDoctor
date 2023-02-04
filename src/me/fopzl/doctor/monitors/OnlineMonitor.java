@@ -36,7 +36,7 @@ public class OnlineMonitor extends Monitor {
 
 	@Override
 	protected void update() {
-		// value item1 is afk count, item2 is active/non-afk count
+		// value item0 is afk count, item1 is active/non-afk count
 		Map<Pair<World, Rank>, Pair<Integer, Integer>> activityCounts = new HashMap<Pair<World, Rank>, Pair<Integer, Integer>>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			World w = p.getWorld();
@@ -50,7 +50,7 @@ public class OnlineMonitor extends Monitor {
 			} else {
 				value.setAt1(value.getValue1() + 1);
 			}
-			activityCounts.putIfAbsent(key, value);
+			activityCounts.put(key, value);
 		}
 
 		List<String> sqls = new ArrayList<String>();
