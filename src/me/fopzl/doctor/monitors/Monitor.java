@@ -11,40 +11,40 @@ import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 abstract class Monitor {
 	public Monitor(ScheduleInterval i) {
 		loadData();
-		
+
 		Doctor.addToScheduler(i, new Runnable() {
 			@Override
 			public void run() {
 				update();
 			}
 		});
-
+		
 		Doctor.addToCleanup(new Runnable() {
 			@Override
 			public void run() {
-				saveData();
+				saveData(false);
 			}
 		});
-		
+
 		if (i == ScheduleInterval.DAILY) {
 			Doctor.addToScheduler(ScheduleInterval.FIFTEEN_MINUTES, new Runnable() {
 				@Override
 				public void run() {
-					saveData();
+					saveData(true);
 				}
 			});
 		}
 	}
-	
+
 	// for polling new data
 	abstract protected void update();
-	
+
 	// for saving in case of server restart
-	abstract protected void saveData();
-	
+	abstract protected void saveData(boolean async);
+
 	// for loading saved data
 	abstract protected void loadData();
-
+	
 	// for permanently saving data in a useful format
 	protected void permSaveData(List<String> sqlStatements) {
 		new BukkitRunnable() {

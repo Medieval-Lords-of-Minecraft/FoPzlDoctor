@@ -39,8 +39,8 @@ public class IOManager {
 		src = new HikariDataSource(config);
 	}
 	
-	public static void saveBlobs(String classname, Map<String, Blob> blobs) {
-		new BukkitRunnable() {
+	public static void saveBlobs(boolean async, String classname, Map<String, Blob> blobs) {
+		BukkitRunnable br = new BukkitRunnable() {
 			@Override
 			public void run() {
 				try {
@@ -73,7 +73,12 @@ public class IOManager {
 					e.printStackTrace();
 				}
 			}
-		}.runTaskAsynchronously(Doctor.getInstance());
+		};
+		
+		if (async)
+			br.runTaskAsynchronously(Doctor.getInstance());
+		else
+			br.runTask(Doctor.getInstance());
 	}
 
 	public static Map<String, Blob> loadBlobs(String classname) throws SQLException {
