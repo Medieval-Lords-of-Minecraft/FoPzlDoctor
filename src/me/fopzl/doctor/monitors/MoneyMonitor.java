@@ -66,14 +66,19 @@ public class MoneyMonitor extends Monitor {
 	protected void saveData(boolean async) {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			new ObjectOutputStream(bytes).writeObject(senderSums);
-			blobs.put("senderSums", new SerialBlob(bytes.toByteArray()));
+			
+			if (senderSums.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(senderSums);
+				blobs.put("senderSums", new SerialBlob(bytes.toByteArray()));
+			}
 
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(receiverSums);
-			blobs.put("receiverSums", new SerialBlob(bytes.toByteArray()));
+			
+			if (receiverSums.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(receiverSums);
+				blobs.put("receiverSums", new SerialBlob(bytes.toByteArray()));
+			}
 
 			bytes.close();
 

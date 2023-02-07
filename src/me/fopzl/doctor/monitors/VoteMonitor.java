@@ -45,10 +45,13 @@ public class VoteMonitor extends Monitor {
 	protected void saveData(boolean async) {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-			
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			new ObjectOutputStream(bytes).writeObject(votesiteCounts);
-			blobs.put("votesiteCounts", new SerialBlob(bytes.toByteArray()));
+			
+			if (votesiteCounts.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(votesiteCounts);
+				blobs.put("votesiteCounts", new SerialBlob(bytes.toByteArray()));
+			}
+			
 			bytes.close();
 			
 			IOManager.saveBlobs(async, getClass().getName(), blobs);

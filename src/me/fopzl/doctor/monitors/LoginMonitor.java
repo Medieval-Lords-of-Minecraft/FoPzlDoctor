@@ -31,67 +31,84 @@ public class LoginMonitor extends Monitor {
 	private static Set<UUID> uniquePlayersDay = new HashSet<UUID>();
 	private static Set<UUID> uniquePlayersWeek = new HashSet<UUID>();
 	private static Set<UUID> uniquePlayersMonth = new HashSet<UUID>();
-
+	
 	// value item0 is newbie count, item1 is regular player count
 	// (newbies are identified by having joined within the past month)
 	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsDay = new HashMap<Rank, Pair<Integer, Integer>>();
 	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsWeek = new HashMap<Rank, Pair<Integer, Integer>>();
 	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsMonth = new HashMap<Rank, Pair<Integer, Integer>>();
-
+	
 	public LoginMonitor(ScheduleInterval i) {
 		super(i);
 		assert i == ScheduleInterval.DAILY; // :)
 	}
-
+	
 	@Override
 	protected void update() {
 		LocalDateTime now = LocalDateTime.now();
-
+		
 		updateDay();
 		if (now.getDayOfWeek() == DayOfWeek.SUNDAY)
 			updateWeek();
 		if (now.getDayOfMonth() == 1)
 			updateMonth();
 	}
-	
+
 	@Override
 	protected void saveData(boolean async) {
 		try {
 			Map<String, Blob> blobs = new HashMap<String, Blob>();
-			
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			new ObjectOutputStream(bytes).writeObject(uniquePlayersDay);
-			blobs.put("uniquePlayersDay", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniquePlayersDay.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniquePlayersDay);
+				blobs.put("uniquePlayersDay", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(uniquePlayersWeek);
-			blobs.put("uniquePlayersWeek", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniquePlayersWeek.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniquePlayersWeek);
+				blobs.put("uniquePlayersWeek", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(uniquePlayersMonth);
-			blobs.put("uniquePlayersMonth", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniquePlayersMonth.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniquePlayersMonth);
+				blobs.put("uniquePlayersMonth", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsDay);
-			blobs.put("uniqueLoginCountsDay", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniqueLoginCountsDay.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsDay);
+				blobs.put("uniqueLoginCountsDay", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsWeek);
-			blobs.put("uniqueLoginCountsWeek", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniqueLoginCountsWeek.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsWeek);
+				blobs.put("uniqueLoginCountsWeek", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.flush();
-			new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsMonth);
-			blobs.put("uniqueLoginCountsMonth", new SerialBlob(bytes.toByteArray()));
-			
+
+			if (uniqueLoginCountsMonth.size() > 0) {
+				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsMonth);
+				blobs.put("uniqueLoginCountsMonth", new SerialBlob(bytes.toByteArray()));
+			}
+
 			bytes.close();
-			
+
 			IOManager.saveBlobs(async, getClass().getName(), blobs);
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
 			e.printStackTrace();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void loadData() {
@@ -99,7 +116,7 @@ public class LoginMonitor extends Monitor {
 			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
 			if (blobs == null || blobs.isEmpty())
 				return;
-
+			
 			uniquePlayersDay = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersDay").getBinaryStream()).readObject());
 			uniquePlayersWeek = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersWeek").getBinaryStream()).readObject());
 			uniquePlayersMonth = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersMonth").getBinaryStream()).readObject());
@@ -114,7 +131,7 @@ public class LoginMonitor extends Monitor {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void updateDay() {
 		List<String> sqls = new ArrayList<String>();
 		String server = NeoCore.getInstanceKey();
@@ -123,7 +140,7 @@ public class LoginMonitor extends Monitor {
 			String rank = entry.getKey().toString();
 			int noobCount = entry.getValue().getValue0();
 			int regularCount = entry.getValue().getValue1();
-
+			
 			sqls.add(
 					"insert into fopzldoctor_loginMonitor (server, period, rank, noobCount, regularCount) values ('" + server + "', '" + period + "', '" + rank
 							+ "', " + noobCount + ", " + regularCount + ");"
@@ -132,7 +149,7 @@ public class LoginMonitor extends Monitor {
 		permSaveData(sqls);
 		resetDay();
 	}
-
+	
 	private void updateWeek() {
 		List<String> sqls = new ArrayList<String>();
 		String server = NeoCore.getInstanceKey();
@@ -141,7 +158,7 @@ public class LoginMonitor extends Monitor {
 			String rank = entry.getKey().toString();
 			int noobCount = entry.getValue().getValue0();
 			int regularCount = entry.getValue().getValue1();
-
+			
 			sqls.add(
 					"insert into fopzldoctor_loginMonitor (server, period, rank, noobCount, regularCount) values ('" + server + "', '" + period + "', '" + rank
 							+ "', " + noobCount + ", " + regularCount + ");"
@@ -150,7 +167,7 @@ public class LoginMonitor extends Monitor {
 		permSaveData(sqls);
 		resetWeek();
 	}
-
+	
 	private void updateMonth() {
 		List<String> sqls = new ArrayList<String>();
 		String server = NeoCore.getInstanceKey();
@@ -159,7 +176,7 @@ public class LoginMonitor extends Monitor {
 			String rank = entry.getKey().toString();
 			int noobCount = entry.getValue().getValue0();
 			int regularCount = entry.getValue().getValue1();
-
+			
 			sqls.add(
 					"insert into fopzldoctor_loginMonitor (server, period, rank, noobCount, regularCount) values ('" + server + "', '" + period + "', '" + rank
 							+ "', " + noobCount + ", " + regularCount + ");"
@@ -168,38 +185,38 @@ public class LoginMonitor extends Monitor {
 		permSaveData(sqls);
 		resetMonth();
 	}
-
+	
 	private static void resetDay() {
 		uniquePlayersDay.clear();
 		uniqueLoginCountsDay.clear();
 	}
-
+	
 	private static void resetWeek() {
 		uniquePlayersDay.clear();
 		uniqueLoginCountsDay.clear();
 	}
-
+	
 	private static void resetMonth() {
 		uniquePlayersDay.clear();
 		uniqueLoginCountsDay.clear();
 	}
-
+	
 	public static void tryIncPlayer(UUID uuid) {
 		tryIncPlayer(uuid, uniquePlayersDay, uniqueLoginCountsDay);
 		tryIncPlayer(uuid, uniquePlayersWeek, uniqueLoginCountsWeek);
 		tryIncPlayer(uuid, uniquePlayersMonth, uniqueLoginCountsMonth);
 	}
-
+	
 	private static void tryIncPlayer(UUID uuid, Set<UUID> uniquePlayers, Map<Rank, Pair<Integer, Integer>> uniqueLoginCounts) {
 		if (uniquePlayers.contains(uuid))
 			return;
-
+		
 		Player p = Bukkit.getPlayer(uuid);
 		Rank rank = Rank.getPlayerRank(p);
-
+		
 		LocalDateTime firstPlayed = LocalDateTime.ofEpochSecond(p.getFirstPlayed(), 0, ZoneOffset.UTC);
 		boolean noob = firstPlayed.isAfter(LocalDateTime.now().minusMonths(1));
-
+		
 		Pair<Integer, Integer> pair = uniqueLoginCounts.getOrDefault(rank, Pair.with(0, 0));
 		if (noob) {
 			pair.setAt0(pair.getValue0() + 1);
