@@ -1,31 +1,24 @@
 package me.fopzl.doctor.monitors;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.sql.rowset.serial.SerialBlob;
-
-import org.bukkit.Bukkit;
-
 import me.fopzl.doctor.Doctor.Rank;
-import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Pair;
 import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class ChatMonitor extends Monitor {
 	// String in key is chat channel
-	private static Map<Pair<Rank, String>, Integer> chatCounts = new HashMap<Pair<Rank, String>, Integer>();
+	public static Map<Pair<Rank, String>, Integer> chatCounts = new HashMap<Pair<Rank, String>, Integer>();
 
 	public ChatMonitor(ScheduleInterval i) {
 		super(i);
+
+		dataFields.add("chatCounts");
 	}
 
 	@Override
@@ -46,41 +39,6 @@ public class ChatMonitor extends Monitor {
 
 		permSaveData(sqls);
 		reset();
-	}
-	
-	@Override
-	protected void saveData(boolean async) {
-		try {
-			Map<String, Blob> blobs = new HashMap<String, Blob>();
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-			if (chatCounts.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(chatCounts);
-				blobs.put("chatCounts", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.close();
-
-			IOManager.saveBlobs(async, getClass().getName(), blobs);
-		} catch (Exception e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void loadData() {
-		try {
-			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
-			if (blobs == null || blobs.isEmpty())
-				return;
-
-			chatCounts = (Map<Pair<Rank, String>, Integer>) (new ObjectInputStream(blobs.get("chatCounts").getBinaryStream()).readObject());
-		} catch (Exception e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");
-			e.printStackTrace();
-		}
 	}
 
 	private static void reset() {

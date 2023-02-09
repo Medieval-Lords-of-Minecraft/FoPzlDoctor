@@ -1,9 +1,5 @@
 package me.fopzl.doctor.monitors;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.sql.Blob;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,31 +12,35 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.sql.rowset.serial.SerialBlob;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.fopzl.doctor.Doctor.Rank;
-import me.fopzl.doctor.IOManager;
 import me.fopzl.doctor.util.tuples.Pair;
 import me.neoblade298.neocore.bukkit.NeoCore;
 import me.neoblade298.neocore.bukkit.scheduler.ScheduleInterval;
 
 public class LoginMonitor extends Monitor {
-	private static Set<UUID> uniquePlayersDay = new HashSet<UUID>();
-	private static Set<UUID> uniquePlayersWeek = new HashSet<UUID>();
-	private static Set<UUID> uniquePlayersMonth = new HashSet<UUID>();
+	public static Set<UUID> uniquePlayersDay = new HashSet<UUID>();
+	public static Set<UUID> uniquePlayersWeek = new HashSet<UUID>();
+	public static Set<UUID> uniquePlayersMonth = new HashSet<UUID>();
 	
 	// value item0 is newbie count, item1 is regular player count
 	// (newbies are identified by having joined within the past month)
-	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsDay = new HashMap<Rank, Pair<Integer, Integer>>();
-	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsWeek = new HashMap<Rank, Pair<Integer, Integer>>();
-	private static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsMonth = new HashMap<Rank, Pair<Integer, Integer>>();
+	public static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsDay = new HashMap<Rank, Pair<Integer, Integer>>();
+	public static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsWeek = new HashMap<Rank, Pair<Integer, Integer>>();
+	public static Map<Rank, Pair<Integer, Integer>> uniqueLoginCountsMonth = new HashMap<Rank, Pair<Integer, Integer>>();
 	
 	public LoginMonitor(ScheduleInterval i) {
 		super(i);
 		assert i == ScheduleInterval.DAILY; // :)
+
+		dataFields.add("uniquePlayersDay");
+		dataFields.add("uniquePlayersWeek");
+		dataFields.add("uniquePlayersMonth");
+		dataFields.add("uniqueLoginCountsDay");
+		dataFields.add("uniqueLoginCountsWeek");
+		dataFields.add("uniqueLoginCountsMonth");
 	}
 	
 	@Override
@@ -52,84 +52,6 @@ public class LoginMonitor extends Monitor {
 			updateWeek();
 		if (now.getDayOfMonth() == 1)
 			updateMonth();
-	}
-
-	@Override
-	protected void saveData(boolean async) {
-		try {
-			Map<String, Blob> blobs = new HashMap<String, Blob>();
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-			if (uniquePlayersDay.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniquePlayersDay);
-				blobs.put("uniquePlayersDay", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.flush();
-
-			if (uniquePlayersWeek.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniquePlayersWeek);
-				blobs.put("uniquePlayersWeek", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.flush();
-
-			if (uniquePlayersMonth.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniquePlayersMonth);
-				blobs.put("uniquePlayersMonth", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.flush();
-
-			if (uniqueLoginCountsDay.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsDay);
-				blobs.put("uniqueLoginCountsDay", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.flush();
-
-			if (uniqueLoginCountsWeek.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsWeek);
-				blobs.put("uniqueLoginCountsWeek", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.flush();
-
-			if (uniqueLoginCountsMonth.size() > 0) {
-				new ObjectOutputStream(bytes).writeObject(uniqueLoginCountsMonth);
-				blobs.put("uniqueLoginCountsMonth", new SerialBlob(bytes.toByteArray()));
-			}
-
-			bytes.close();
-
-			IOManager.saveBlobs(async, getClass().getName(), blobs);
-		} catch (Exception e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception saving BLOBs for " + getClass().getName() + ":");
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void loadData() {
-		try {
-			Map<String, Blob> blobs = IOManager.loadBlobs(getClass().getName());
-			if (blobs == null || blobs.isEmpty())
-				return;
-			
-			uniquePlayersDay = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersDay").getBinaryStream()).readObject());
-			uniquePlayersWeek = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersWeek").getBinaryStream()).readObject());
-			uniquePlayersMonth = (Set<UUID>) (new ObjectInputStream(blobs.get("uniquePlayersMonth").getBinaryStream()).readObject());
-			uniqueLoginCountsDay = (Map<Rank, Pair<Integer, Integer>>) (new ObjectInputStream(blobs.get("uniqueLoginCountsDay").getBinaryStream())
-					.readObject());
-			uniqueLoginCountsWeek = (Map<Rank, Pair<Integer, Integer>>) (new ObjectInputStream(blobs.get("uniqueLoginCountsWeek").getBinaryStream())
-					.readObject());
-			uniqueLoginCountsMonth = (Map<Rank, Pair<Integer, Integer>>) (new ObjectInputStream(blobs.get("uniqueLoginCountsMonth").getBinaryStream())
-					.readObject());
-		} catch (Exception e) {
-			Bukkit.getLogger().warning("[DOCTOR] Exception loading BLOBs for " + getClass().getName() + ":");
-			e.printStackTrace();
-		}
 	}
 	
 	private void updateDay() {
